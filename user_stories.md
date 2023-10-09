@@ -11,7 +11,7 @@
 - As a consumer, I want to be able to choose the closest stores to me so I can plan my trip better.
 - As a consumer, I want to be able to constantly view the prices of items so I can know the best places ahead of time.
 - As a chef, I want to be able to choose the best ingredients at the stores near me.
-Exceptions:
+**Exceptions:**
 - Item could not be found: If the user searches for an item that is not in the database, they should be notified that the item is not available.
 - Item is sold out: If the user searches for an item that is completely sold out, they will be notified that the stock of the item is none.
 - Grocery Store is closed: If the user searches for items, the list of grocery stores returned will include information of each grocery store’s hours and if they are currently open or not.
