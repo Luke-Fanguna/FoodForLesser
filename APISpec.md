@@ -56,7 +56,7 @@ Calls POST /lists/1/items/tomato to add tomato to his list
 Finally, he calls POST /stores/1/distribute to get the cheapest store for each item in his list
 Now with his distributed list of grocery items with their respective store(s), he and his roommates can effectively split up their grocery needs, in which each roommate can go to one grocery store and get the item that is cheapest there. 
 
-Misaki is a single mother. She wants to find a store that is close by with cheap groceries so her and her child won’t starve. She desperately needs baby food and caffeine. She requests a list of stores near her location by calling GET /stores. This gives her a list of stores within ten miles of her. She then makes her own grocery list by calling POST /lists. She wants to add coffee, baby food, and top ramen to her list and find the grocery store where the total cost of her list would be the cheapest. 
+3. Misaki is a single mother. She wants to find a store that is close by with cheap groceries so her and her child won’t starve. She desperately needs baby food and caffeine. She requests a list of stores near her location by calling GET /stores. This gives her a list of stores within ten miles of her. She then makes her own grocery list by calling POST /lists. She wants to add coffee, baby food, and top ramen to her list and find the grocery store where the total cost of her list would be the cheapest. 
 To do so she:
 Calls POST /lists/1/items/coffee to add coffee to her list
 Calls POST /lists/1/items/baby_food to add baby food to her list
