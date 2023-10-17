@@ -1,0 +1,47 @@
+Grocery List - Customer
+1.1 - Create a new grocery list - /lists/ (POST)
+*Creates a new grocery list*
+  Returns: Grocery List Id
+
+1.2 - Add new grocery list item - /lists/{list_id}/items/{item_name} (PUT)
+	*Adds a new grocery item to your grocery list*
+	Input: Grocery item name
+	Returns: "success": "boolean"
+
+1.3 - Delete grocery list item - /lists/{list_id}/items/{item_name} (DELETE)
+	*Deletes a grocery item from your grocery list*
+	Input: Grocery item name
+	Output: "success": "boolean"
+
+
+Items Search
+2.1 - Get Stores - /stores/ (GET)
+	*Retrieves the list of stores with distances*
+	Input: Location
+	Returns: Store locations within a 10-mile radius
+
+2.2 - Get distributed grocery list - /stores/{list_id}/distribute (POST)
+	*Decides which groceries should go to which stores*
+	Input: list_id
+	Returns: List of items and groceries 
+
+2.3 - Get best for basket - /stores/{list_id}/best (POST)
+	*Retrieves the store that has the best price overall for the entire list of items in grocery list*
+	Input: list_id
+	Returns: store_id
+
+CrowdSourcing
+3.1 - Upload new grocery price posting - /crowdsourcing/{store_id}/{item_name}/upload/{grocery_price} (POST)
+	*Adds a new grocery price posting*
+	Input: item_name, Grocery price, store_id
+	Returns: posting_id
+
+3.2 - Update pre-existing posted price - /crowdsourcing/{posting_id}/update/{grocery_price} (PUT)
+	*Changes grocery price posting* 
+	Input: posting id, Grocery price
+	Returns: "success": "boolean"
+
+3.3 - Delete grocery price posting - /crowdsourcing/{posting_id}/delete (DELETE)
+	*Removes grocery price posting*
+	Input: posting_id
+	Returns: "success": "boolean"
