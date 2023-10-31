@@ -9,16 +9,16 @@ Starts by calling POST /crowdsourcing/{store_id}/{grocery_id}/upload/{grocery_pr
   -H 'accept: application/json' \
   -H 'access_token: food' \
   -d ''
-  Response: 1 
+- Response: 1 
  
 2. curl -X 'PUT' \
   'http://127.0.0.1:8000/crowdsourcing/1/update/3.99' \
   -H 'accept: application/json' \
   -H 'access_token: food'
-  Response: "OK"
+- Response: "OK"
 
-3. curl -X 'DELETE' \
+4. curl -X 'DELETE' \
   'http://127.0.0.1:8000/crowdsourcing/1/delete' \
   -H 'accept: application/json' \
   -H 'access_token: food'
-  Response: "OK"
+- Response: "OK"
