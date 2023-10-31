@@ -49,14 +49,7 @@ def get_bottle_plan(
         posting_id : int,
         grocery_price : float
     ):
-    """
-    Go from barrel to bottle.
-    """
-
-    # Each bottle has a quantity of what proportion of red, blue, and
-    # green potion to add.
-    # Expressed in integers from 1 to 100 that must sum up to 100.
-
+    
     with db.engine.begin() as connection:
         connection.execute(sqlalchemy.text("""
                                             UPDATE crowdsourced_entries
@@ -70,23 +63,14 @@ def get_bottle_plan(
     return "OK"
     
 @router.delete("/{posting_id}/delete")
-def get_bottle_plan(
+def remove_entry(
         posting_id : int,
     ):
-    """
-    Go from barrel to bottle.
-    """
-
-    # Each bottle has a quantity of what proportion of red, blue, and
-    # green potion to add.
-    # Expressed in integers from 1 to 100 that must sum up to 100.
-
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("""
-                                            DELETE FROM crowdsourced_entries
-                                            WHERE id = :posting_id
-                                            """),[{
-                                                "posting_id": posting_id,
-                                            }])
+        connection.execute(sqlalchemy.text(
+        """
+        DELETE FROM crowdsourced_entries
+        WHERE id = :posting_id
+        """),[{"posting_id": posting_id}])
         
     return "OK"
