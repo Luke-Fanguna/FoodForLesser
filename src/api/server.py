@@ -29,6 +29,7 @@ app.add_middleware(
 )
 
 app.include_router(crowdsourcing.router)
+app.include_router(list.router)
 
 @app.exception_handler(exceptions.RequestValidationError)
 @app.exception_handler(ValidationError)
