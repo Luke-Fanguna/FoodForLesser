@@ -63,6 +63,60 @@ def distribute_list(list_id: int):
 @router.post("/stores/{list_id}/best (POST)")
 def find_best_item(list_id: int):
     """ """
+    with db.engine.begin() as connection:
+        #should grab all items in the users list and their quantities
+        items = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT item_id, quantity
+                FROM grocery_list_items
+                WHERE list_id = :list_id
+                """    
+            ), [{"list_id": list_id}]
+        ).fetchall()
+        
+        stores = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT id
+                FROM stores
+                """
+            )
+        ).fetchall()
+        
+        
+        #initialize list of total prices corresponding to store id
+        prices = [0] * len(stores)
+        
+        for item in items:
+            for store in stores:
+                #get the price of the most recent posting of the item
+                itemPriceRes = connection.execute(
+                    sqlalchemy.text(
+                        """
+                        SELECT price
+                        FROM crowdsourced_entries
+                        WHERE created_at = (
+                            SELECT MAX(created_at) 
+                            FROM crowdsourced_entries
+                            WHERE item_id = :item_id and store_id = :store_id
+                            )
+                        """
+                    ), [{"item_id": item[0], "store_id": store[0]}]
+                )
+                if itemPriceRes:
+                    itemPrice = itemPriceRes.scalar_one()
+                else:
+                    #if item not in crowdsource for that store, just basically disqualify that list from being min
+                    itemPrice = 999999
+                #add the price of the item * quantity to the corresponding store
+                #subtract 1 because first store id starts at 1 and not 0
+                prices[store[0] - 1] += itemPrice * item[1]
+                
+        best_store = prices.index(min(prices)) + 1
+        print(prices)
+        return best_store
+    
 
 @router.post("/stores/ (GET)")
 def find_stores():
