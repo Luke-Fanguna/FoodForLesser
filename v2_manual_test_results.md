@@ -78,3 +78,26 @@ Josh lives with 3 of his friends and is looking for a way to grocery shop effici
   -H 'accept: application/json' \
   -H 'access_token: food'
 - Response: "OK"
+
+# Workflow
+LilNHo is a helpful citizen,  LilNHo finds eggs for half off deal at Costco and wants to share his find with others! He opens up Food4Lesser and creates a new grocery price posting for everyone to see. In his excitement, he accidentally makes a typo. He quickly updates the price of his post and goes on with shopping. Later when he is leaving, he realizes many people saw his post and came to Costco to buy eggs. With the eggs sold out, he deletes his posting so no one else comes to Costco disappointed.  
+
+# Results
+1. curl -X 'POST' \
+  'http://127.0.0.1:8000/crowdsourcing/3/upload/2/10/9.99?inventory_levels=medium' \
+  -H 'accept: application/json' \
+  -H 'access_token: food' \
+  -d ''
+- Response: "17"
+
+2. curl -X 'PUT' \
+  'http://127.0.0.1:8000/crowdsourcing/17/update/4.99' \
+  -H 'accept: application/json' \
+  -H 'access_token: food'
+- Response: "OK"
+
+3. curl -X 'DELETE' \
+  'http://127.0.0.1:8000/crowdsourcing/17/delete' \
+  -H 'accept: application/json' \
+  -H 'access_token: food'
+- Response: "OK"
