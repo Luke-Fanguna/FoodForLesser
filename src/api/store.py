@@ -24,38 +24,60 @@ def distribute_list(list_id: int):
         """
         SELECT
             item_id
+        FROM grocery_list_items
         WHERE list_id = :list_id
         """
         ),[{"list_id":list_id}]).fetchall()
         if items[0] == None:
             return []
-        items = list(items)
+        items = [x[0] for x in items]
+        print(items)
         best = []
-        
+        distribute = []
+        basket = set()
         # searches crowdsources entries for best price
         for item in items:
             best = connection.execute(sqlalchemy.text(
             """
             SELECT 
                 store_id,
-                MIN(price)
+                item_id,
+                price
             FROM crowdsourced_entries
             WHERE item_id = :item_id
             ORDER BY store_id asc;
             """
             ),[{"item_id":item}]).fetchall()
+            best = min(best, key=lambda x: x[2])
+            print(best)
             
-            distribute = []
             # joins best prices items with their stores
-            distribute.append([connection.execute(sqlalchemy.text(
-            """
-            SELECT
-                name
-            FROM stores
-            WHERE store_id = :store_id
-            """
-            ),[{"store_id":best[0]}]).fetchone()[0],best[1]])
-        
+            if item not in basket:
+                basket.add(item)
+            else:
+                continue
+            distribute.append(
+                [
+                    connection.execute(sqlalchemy.text(
+                    """
+                    SELECT
+                        name
+                    FROM stores
+                    WHERE id = :store_id
+                    """
+                    ),[{"store_id":best[0]}]).fetchone()[0],
+                    connection.execute(sqlalchemy.text(
+                    """
+                    SELECT
+                        name
+                    FROM items
+                    WHERE id = :item_id
+                    """
+                    ),[{"item_id":best[1]}]).fetchone()[0],
+                    best[2]
+                ]
+            )
+        print(distribute)
         return distribute
         
 
