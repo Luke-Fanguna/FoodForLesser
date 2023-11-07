@@ -28,15 +28,17 @@ def distribute_list(list_id: int):
         WHERE list_id = :list_id
         """
         ),[{"list_id":list_id}]).fetchall()
+        print("items",items)
         if items[0] == None:
             return []
         items = [x[0] for x in items]
-        print(items)
+        print('arr',items)
         best = []
         distribute = []
         basket = set()
         # searches crowdsources entries for best price
         for item in items:
+            print('loop',item)
             best = connection.execute(sqlalchemy.text(
             """
             SELECT 
@@ -48,8 +50,10 @@ def distribute_list(list_id: int):
             ORDER BY store_id asc;
             """
             ),[{"item_id":item}]).fetchall()
-            best = min(best, key=lambda x: x[2])
             print(best)
+            if len(best) == 0:
+                continue
+            best = min(best, key=lambda x: x[2])
             
             # joins best prices items with their stores
             if item not in basket:

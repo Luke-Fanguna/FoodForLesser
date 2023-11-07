@@ -50,10 +50,30 @@ Josh lives with 3 of his friends and is looking for a way to grocery shop effici
     "quantity": 1
   }
 
-6. Nathan's Distribute function
+6. curl -X 'POST' \
+  'http://127.0.0.1:8000/lists/stores/2/distribute (POST)' \
+  -H 'accept: application/json' \
+  -H 'access_token: food' \
+  -d ''
+- Response : [
+  {
+    "Store": "Ralphs",
+    "Item": "Ketchup",
+    "Price": 3
+  },
+  {
+    "Store": "Ralphs",
+    "Item": "Hotdogs",
+    "Price": 3
+  },
+  {
+    "Store": "Costco",
+    "Item": "Bread",
+    "Price": 2
+  }
+]
 
-
-8. curl -X 'DELETE' \
+7. curl -X 'DELETE' \
   'http://127.0.0.1:8000/crowdsourcing/1/delete' \
   -H 'accept: application/json' \
   -H 'access_token: food'
