@@ -57,7 +57,8 @@ def distribute_list(list_id: int):
             else:
                 continue
             distribute.append(
-                [
+                {
+                    "Store":
                     connection.execute(sqlalchemy.text(
                     """
                     SELECT
@@ -66,6 +67,7 @@ def distribute_list(list_id: int):
                     WHERE id = :store_id
                     """
                     ),[{"store_id":best[0]}]).fetchone()[0],
+                    "Item":
                     connection.execute(sqlalchemy.text(
                     """
                     SELECT
@@ -74,8 +76,8 @@ def distribute_list(list_id: int):
                     WHERE id = :item_id
                     """
                     ),[{"item_id":best[1]}]).fetchone()[0],
-                    best[2]
-                ]
+                    "Price":best[2]
+                }
             )
         print(distribute)
         return distribute
