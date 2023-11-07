@@ -142,8 +142,9 @@ def find_best_item(list_id: int):
                 prices[store[0] - 1] += itemPrice * item[1]
                 
         best_store = prices.index(min(prices)) + 1
-        print(prices)
-        return best_store
+        #print(prices)
+        return {"store_id": best_store}
+    
     
 
 @router.post("/stores/ (GET)")

@@ -150,5 +150,10 @@ Misaki is a single mother. She wants to find a store that is close by with cheap
   }
 ] 
 
-7. TO DO
+7. curl -X 'POST' \
+  'http://127.0.0.1:8000/lists/stores/4/best (POST)' \
+  -H 'accept: application/json' \
+  -H 'access_token: food' \
+  -d ''
+- Response: { "store_id": 5 }
 
