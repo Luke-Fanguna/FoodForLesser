@@ -3,35 +3,35 @@ Josh lives with 3 of his friends and is looking for a way to grocery shop effici
 
 # Testing results
 1. curl -X 'POST' \
-  'http://127.0.0.1:8000/lists/?user_id=3' \
+  'https://food-for-lesser.onrender.com/lists/?user_id=3' \
   -H 'accept: application/json' \
   -H 'access_token: food' \
   -d ''
 - Response: { "list_id": 2 }
  
 2. curl -X 'POST' \
-  'http://127.0.0.1:8000/lists/2/items/1/2' \
+  'https://food-for-lesser.onrender.com/lists/2/items/1/2' \
   -H 'accept: application/json' \
   -H 'access_token: food' \
   -d ''
 - Response: { "posting_id": 9 }
 
 3. curl -X 'POST' \
-  'http://127.0.0.1:8000/lists/2/items/2/3' \
+  'https://food-for-lesser.onrender.com/lists/2/items/2/3' \
   -H 'accept: application/json' \
   -H 'access_token: food' \
   -d ''
 - Response: { "posting_id": 10 }
 
 4. curl -X 'POST' \
-  'http://127.0.0.1:8000/lists/2/items/3/1' \
+  'https://food-for-lesser.onrender.com/lists/2/items/3/1' \
   -H 'accept: application/json' \
   -H 'access_token: food' \
   -d ''
 - Response: { "posting_id": 11 }
 
 5. curl -X 'GET' \
-  'http://127.0.0.1:8000/lists/2' \
+  'https://food-for-lesser.onrender.com/lists/2' \
   -H 'accept: application/json' \
   -H 'access_token: food'  
 - Response: {
@@ -51,7 +51,7 @@ Josh lives with 3 of his friends and is looking for a way to grocery shop effici
   }
 
 6. curl -X 'POST' \
-  'http://127.0.0.1:8000/lists/stores/2/distribute (POST)' \
+  'https://food-for-lesser.onrender.com/lists/stores/2/distribute (POST)' \
   -H 'accept: application/json' \
   -H 'access_token: food' \
   -d ''
@@ -74,7 +74,7 @@ Josh lives with 3 of his friends and is looking for a way to grocery shop effici
 ]
 
 7. curl -X 'DELETE' \
-  'http://127.0.0.1:8000/crowdsourcing/1/delete' \
+  'https://food-for-lesser.onrender.com/crowdsourcing/1/delete' \
   -H 'accept: application/json' \
   -H 'access_token: food'
 - Response: "OK"
@@ -84,20 +84,20 @@ LilNHo is a helpful citizen,  LilNHo finds eggs for half off deal at Costco and 
 
 # Results
 1. curl -X 'POST' \
-  'http://127.0.0.1:8000/crowdsourcing/3/upload/2/10/9.99?inventory_levels=medium' \
+  'https://food-for-lesser.onrender.com/crowdsourcing/3/upload/2/10/9.99?inventory_levels=medium' \
   -H 'accept: application/json' \
   -H 'access_token: food' \
   -d ''
 - Response: "17"
 
 2. curl -X 'PUT' \
-  'http://127.0.0.1:8000/crowdsourcing/17/update/4.99' \
+  'https://food-for-lesser.onrender.com/crowdsourcing/17/update/4.99' \
   -H 'accept: application/json' \
   -H 'access_token: food'
 - Response: "OK"
 
 3. curl -X 'DELETE' \
-  'http://127.0.0.1:8000/crowdsourcing/17/delete' \
+  'https://food-for-lesser.onrender.com/crowdsourcing/17/delete' \
   -H 'accept: application/json' \
   -H 'access_token: food'
 - Response: "OK"
