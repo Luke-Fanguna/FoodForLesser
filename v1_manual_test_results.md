@@ -5,20 +5,20 @@ Starts by calling POST /crowdsourcing/{store_id}/{grocery_id}/upload/{grocery_pr
 
 # Testing results
 1. curl -X 'POST' \
-  'http://127.0.0.1:8000/crowdsourcing/1/upload/1/1/4.99?inventory_levels=medium' \
+  'https://food-for-lesser.onrender.com/crowdsourcing/1/upload/1/1/4.99?inventory_levels=medium' \
   -H 'accept: application/json' \
   -H 'access_token: food' \
   -d ''
 - Response: 1 
  
 2. curl -X 'PUT' \
-  'http://127.0.0.1:8000/crowdsourcing/1/update/3.99' \
+  'https://food-for-lesser.onrender.com/crowdsourcing/1/update/3.99' \
   -H 'accept: application/json' \
   -H 'access_token: food'
 - Response: "OK"
 
 4. curl -X 'DELETE' \
-  'http://127.0.0.1:8000/crowdsourcing/1/delete' \
+  'https://food-for-lesser.onrender.com/crowdsourcing/1/delete' \
   -H 'accept: application/json' \
   -H 'access_token: food'
 - Response: "OK"
