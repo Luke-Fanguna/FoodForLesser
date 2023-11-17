@@ -1,0 +1,13 @@
+**User Stories:**
+- As a grocery shopper, I want to estimate the total cost of my shopping list so that I can stay within my budget.
+- As a poor college student, I want the cheapest groceries so that I can eat enough and stay healthy.
+- As a vegan, I want access to FoodForLesser so that I can search niche items and know which stores have stock of it.
+- As a helpful citizen, I want to help connect people with affordable groceries so I will contribute to crowdsourcing.
+- As a roommate, I want an effective way to organize my house’s groceries, so each roommate can budget effectively.
+- As a parent, I want a way to find where the cheapest groceries are quickly, so I can prioritize parental responsibilities.
+- As a small business owner, I want a way to promote my competitive prices, so my business can do better.
+- As someone with a 9 to 5 job, I want to check the stores that have the item I want in stock so that I won’t waste my time.
+- As a grocery store employee, I want customers to find the items they need easily, so I will contribute to crowdsourcing.
+- As a consumer, I want to be able to choose the closest stores to me so I can plan my trip better.
+- As a consumer, I want to be able to constantly view the prices of items so I can know the best places ahead of time.
+- As a chef, I want to be able to choose the best ingredients at the stores near me.
