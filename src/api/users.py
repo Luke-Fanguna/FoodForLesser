@@ -24,7 +24,7 @@ def create_user(username : str, email : str):
         WHERE name LIKE :name OR email LIKE :mail;
         ''')
         ,[{'name':username, 'mail':email}]).scalar()
-        print(entry)
+
         if entry:
             return 'Username or Email already in use'
        
@@ -41,4 +41,3 @@ def create_user(username : str, email : str):
         ,[{'name':username,'email':email}]).scalar()
         
         return { 'user_id' : id }
-        
