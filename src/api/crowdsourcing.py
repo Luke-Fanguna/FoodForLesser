@@ -17,7 +17,7 @@ class inventory_levels(str, Enum):
     low = "low"
 
 # posts a crowdsource listing
-@router.post("/{user_id}/upload/{store_id}/{item_id}/{grocery_price}")
+@router.post("/upload")
 def upload_entry(
         user_id : int, 
         store_id : int,
@@ -44,8 +44,8 @@ def upload_entry(
     
     return result
 
-@router.put("/{posting_id}/update/{grocery_price}")
-def get_bottle_plan(
+@router.put("/update")
+def update_entry(
         posting_id : int,
         grocery_price : float
     ):
@@ -62,7 +62,7 @@ def get_bottle_plan(
         
     return "OK"
     
-@router.delete("/{posting_id}/delete")
+@router.delete("/delete")
 def remove_entry(
         posting_id : int,
     ):
