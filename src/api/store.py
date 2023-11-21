@@ -66,7 +66,7 @@ def distribute_list(list_id: int):
                     connection.execute(sqlalchemy.text(
                     """
                     SELECT
-                        name
+                        store_name
                     FROM stores
                     WHERE id = :store_id
                     """
@@ -75,7 +75,7 @@ def distribute_list(list_id: int):
                     connection.execute(sqlalchemy.text(
                     """
                     SELECT
-                        name
+                        item_name
                     FROM items
                     WHERE id = :item_id
                     """
@@ -164,7 +164,7 @@ def find_stores():
         stores.append(
             {
                 "id": store[0],
-                "name": store[1]
+                "store_name": store[1]
             }
         )
     return stores

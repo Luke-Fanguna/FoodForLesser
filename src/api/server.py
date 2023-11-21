@@ -28,10 +28,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(users.router)
 app.include_router(crowdsourcing.router)
 app.include_router(list.router)
 app.include_router(store.router)
-app.include_router(users.router)
 
 
 @app.exception_handler(exceptions.RequestValidationError)

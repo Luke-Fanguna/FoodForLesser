@@ -21,9 +21,9 @@ def create_user(username : str, email : str):
         SELECT
         *
         FROM users
-        WHERE name LIKE :name OR email LIKE :mail;
+        WHERE username LIKE :username OR email LIKE :email;
         ''')
-        ,[{'name':username, 'mail':email}]).scalar()
+        ,[{'username':username, 'email':email}]).scalar()
 
         if entry:
             return 'Username or Email already in use'
@@ -32,12 +32,12 @@ def create_user(username : str, email : str):
         id = connection.execute(sqlalchemy.text(
         '''
         INSERT INTO users
-        (name, email)
+        (username, email)
         VALUES
-        (:name,:email)
+        (:username,:email)
         RETURNING id
         '''    
         )
-        ,[{'name':username,'email':email}]).scalar()
+        ,[{'username':username,'email':email}]).scalar()
         
         return { 'user_id' : id }
