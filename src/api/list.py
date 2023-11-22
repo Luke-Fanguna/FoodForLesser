@@ -42,13 +42,13 @@ def get_list(list_id : int):
                     "list_id": list_id
                 }]).fetchall()
 
-    res = []
+    res_list = []
 
     for item in items:
-        res.append({"item_id": item[0], 
+        res_list.append({"item_id": item[0], 
                     "item": item[1], 
                     "quantity": item[2]})
-    return res
+    return res_list
 
 
 @router.get("/get")
