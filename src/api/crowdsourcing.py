@@ -42,7 +42,7 @@ def upload_entry(
                 "inventory": inventory_levels
             }]).scalar_one()
     
-    return entry
+    return {"posting_id":entry}
 
 @router.put("/update")
 def update_entry(

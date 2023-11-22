@@ -153,18 +153,11 @@ def find_stores():
     with db.engine.begin() as connection:
         all_stores = connection.execute(sqlalchemy.text(
             """
-            SELECT id, name 
+            SELECT id, store_name 
             FROM stores
             ORDER BY id ASC
             """
             )).fetchall()
     
-    stores = []
-    for store in all_stores:
-        stores.append(
-            {
-                "id": store[0],
-                "store_name": store[1]
-            }
-        )
+    stores = {key: value for key, value in all_stores}
     return stores
