@@ -151,7 +151,7 @@ def find_best_item(list_id: int):
 def find_stores():
     """ """
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text(
+        all_stores = connection.execute(sqlalchemy.text(
             """
             SELECT id, name 
             FROM stores
@@ -160,7 +160,7 @@ def find_stores():
             )).fetchall()
     
     stores = []
-    for store in result:
+    for store in all_stores:
         stores.append(
             {
                 "id": store[0],

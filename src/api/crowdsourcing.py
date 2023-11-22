@@ -28,7 +28,7 @@ def upload_entry(
     """ """
 
     with db.engine.begin() as connection:
-        result = connection.execute(
+        entry = connection.execute(
             sqlalchemy.text("""
                             INSERT INTO crowdsourced_entries (created_at, item_id, store_id, user_id, price, inventory)
                             SELECT NOW(), :item_id, :store_id, :user_id, :grocery_price, :inventory
@@ -42,7 +42,7 @@ def upload_entry(
                 "inventory": inventory_levels
             }]).scalar_one()
     
-    return result
+    return entry
 
 @router.put("/update")
 def update_entry(

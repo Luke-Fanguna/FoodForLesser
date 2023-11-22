@@ -10,11 +10,11 @@ tags=["list"],
 dependencies=[Depends(auth.get_api_key)],
 )
 
-@router.post("/")
+@router.post("/create")
 def create_list(user_id: int):
     """ """
     with db.engine.begin() as connection:
-        result = connection.execute(
+        list_id = connection.execute(
                 sqlalchemy.text("""
                                 INSERT INTO grocery_list (user_id)
                                 SELECT :user_id
@@ -24,7 +24,7 @@ def create_list(user_id: int):
                     "user_id": user_id,
                 }]).scalar_one()
     
-    return {"list_id": result}
+    return {"list_id": list_id}
 
 @router.get("/{list_id}")
 def get_list(list_id : int):
@@ -58,7 +58,7 @@ class ListItem(BaseModel):
 def set_item_quantity(list_id: int, item_id: int, quantity: int):
     """ """
     with db.engine.begin() as connection:
-        result = connection.execute(
+        posting_id = connection.execute(
             sqlalchemy.text("""
                             INSERT INTO grocery_list_items (list_id, item_id, quantity)
                             SELECT :list_id, :item_id, :quantity
@@ -70,7 +70,7 @@ def set_item_quantity(list_id: int, item_id: int, quantity: int):
                 "quantity": quantity,
             }]).scalar_one()
     
-    return {"posting_id": result}
+    return {"posting_id": posting_id}
 
 @router.put("/{posting_id}/items/{quantity}")
 def update_posting(posting_id: int, quantity : int):
