@@ -1,6 +1,7 @@
+import sqlalchemy
+import json
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-import sqlalchemy
 from src.api import auth
 from src import database as db
 
@@ -26,19 +27,19 @@ def create_list(user_id: int):
     
     return {"list_id": list_id}
 
-@router.get("/{list_id}")
+@router.get("/get/{list_id}")
 def get_list(list_id : int):
     """ """
     with db.engine.begin() as connection:
         items = connection.execute(
                 sqlalchemy.text("""
-                                SELECT item_id, items.Name, quantity
+                                SELECT item_id, items.item_name, quantity
                                 FROM grocery_list_items
                                 JOIN items on items.id = grocery_list_items.item_id
                                 WHERE grocery_list_items.list_id = :list_id
                                 """),
                 [{
-                    "list_id": list_id,
+                    "list_id": list_id
                 }]).fetchall()
 
     res = []
@@ -50,11 +51,22 @@ def get_list(list_id : int):
     return res
 
 
+@router.get("/get")
+def get_items():
+    with db.engine.begin() as connection:
+        items = connection.execute(sqlalchemy.text("""
+                        SELECT DISTINCT id, item_name FROM items
+                        """)).fetchall()
+    items = [(int(item[0]),str(item[1])) for item in items]
+    item_list = {key: value for key, value in items}
+
+    return item_list
+
 class ListItem(BaseModel):
     quantity: int
 
 
-@router.post("/{list_id}/items/{item_id}/{quantity}")
+@router.post("/create/item_quantity")
 def set_item_quantity(list_id: int, item_id: int, quantity: int):
     """ """
     with db.engine.begin() as connection:
