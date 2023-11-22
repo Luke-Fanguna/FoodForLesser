@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, Request
-from pydantic import BaseModel
-from sqlalchemy import Connection
 import sqlalchemy
+import json
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 from src.api import auth
-from enum import Enum
 from src import database as db
 
 router = APIRouter(
@@ -12,11 +11,11 @@ tags=["list"],
 dependencies=[Depends(auth.get_api_key)],
 )
 
-@router.post("/")
+@router.post("/create")
 def create_list(user_id: int):
     """ """
     with db.engine.begin() as connection:
-        result = connection.execute(
+        list_id = connection.execute(
                 sqlalchemy.text("""
                                 INSERT INTO grocery_list (user_id)
                                 SELECT :user_id
@@ -26,21 +25,21 @@ def create_list(user_id: int):
                     "user_id": user_id,
                 }]).scalar_one()
     
-    return {"list_id": result}
+    return {"list_id": list_id}
 
-@router.get("/{list_id}")
+@router.get("/get/{list_id}")
 def get_list(list_id : int):
     """ """
     with db.engine.begin() as connection:
         items = connection.execute(
                 sqlalchemy.text("""
-                                SELECT item_id, items.Name, quantity
+                                SELECT item_id, items.item_name, quantity
                                 FROM grocery_list_items
                                 JOIN items on items.id = grocery_list_items.item_id
                                 WHERE grocery_list_items.list_id = :list_id
                                 """),
                 [{
-                    "list_id": list_id,
+                    "list_id": list_id
                 }]).fetchall()
 
     res = []
@@ -52,15 +51,26 @@ def get_list(list_id : int):
     return res
 
 
+@router.get("/get")
+def get_items():
+    with db.engine.begin() as connection:
+        items = connection.execute(sqlalchemy.text("""
+                        SELECT DISTINCT id, item_name FROM items
+                        """)).fetchall()
+    items = [(int(item[0]),str(item[1])) for item in items]
+    item_list = {key: value for key, value in items}
+
+    return item_list
+
 class ListItem(BaseModel):
     quantity: int
 
 
-@router.post("/{list_id}/items/{item_id}/{quantity}")
+@router.post("/create/item_quantity")
 def set_item_quantity(list_id: int, item_id: int, quantity: int):
     """ """
     with db.engine.begin() as connection:
-        result = connection.execute(
+        posting_id = connection.execute(
             sqlalchemy.text("""
                             INSERT INTO grocery_list_items (list_id, item_id, quantity)
                             SELECT :list_id, :item_id, :quantity
@@ -72,7 +82,7 @@ def set_item_quantity(list_id: int, item_id: int, quantity: int):
                 "quantity": quantity,
             }]).scalar_one()
     
-    return {"posting_id": result}
+    return {"posting_id": posting_id}
 
 @router.put("/{posting_id}/items/{quantity}")
 def update_posting(posting_id: int, quantity : int):

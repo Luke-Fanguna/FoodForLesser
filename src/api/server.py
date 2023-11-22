@@ -1,7 +1,7 @@
 from fastapi import FastAPI, exceptions
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from src.api import crowdsourcing, list, store
+from src.api import crowdsourcing, list, store, users
 import json
 import logging
 import sys
@@ -28,9 +28,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(crowdsourcing.router)
+app.include_router(users.router)
 app.include_router(list.router)
 app.include_router(store.router)
+app.include_router(crowdsourcing.router)
 
 @app.exception_handler(exceptions.RequestValidationError)
 @app.exception_handler(ValidationError)

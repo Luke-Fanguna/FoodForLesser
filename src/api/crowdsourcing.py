@@ -17,7 +17,7 @@ class inventory_levels(str, Enum):
     low = "low"
 
 # posts a crowdsource listing
-@router.post("/{user_id}/upload/{store_id}/{item_id}/{grocery_price}")
+@router.post("/upload")
 def upload_entry(
         user_id : int, 
         store_id : int,
@@ -28,7 +28,7 @@ def upload_entry(
     """ """
 
     with db.engine.begin() as connection:
-        result = connection.execute(
+        entry = connection.execute(
             sqlalchemy.text("""
                             INSERT INTO crowdsourced_entries (created_at, item_id, store_id, user_id, price, inventory)
                             SELECT NOW(), :item_id, :store_id, :user_id, :grocery_price, :inventory
@@ -42,10 +42,10 @@ def upload_entry(
                 "inventory": inventory_levels
             }]).scalar_one()
     
-    return result
+    return {"posting_id":entry}
 
-@router.put("/{posting_id}/update/{grocery_price}")
-def get_bottle_plan(
+@router.put("/update")
+def update_entry(
         posting_id : int,
         grocery_price : float
     ):
@@ -62,7 +62,7 @@ def get_bottle_plan(
         
     return "OK"
     
-@router.delete("/{posting_id}/delete")
+@router.delete("/delete")
 def remove_entry(
         posting_id : int,
     ):

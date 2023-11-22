@@ -5,8 +5,8 @@ import sqlalchemy
 from src import database as db
 
 router = APIRouter(
-prefix="/lists",
-tags=["list"],
+prefix="/stores",
+tags=["stores"],
 dependencies=[Depends(auth.get_api_key)],
 )
 
@@ -15,7 +15,7 @@ dependencies=[Depends(auth.get_api_key)],
 # get item_id with list_id from grocery_list_items
 # with item_id, find the smallest for each value and unique values are found with list_id
 # list_id == user_id
-@router.post("/stores/{list_id}/distribute (POST)")
+@router.post("/{list_id}/distribute (POST)")
 def distribute_list(list_id: int):
     """ """
     with db.engine.begin() as connection:
@@ -66,7 +66,7 @@ def distribute_list(list_id: int):
                     connection.execute(sqlalchemy.text(
                     """
                     SELECT
-                        name
+                        store_name
                     FROM stores
                     WHERE id = :store_id
                     """
@@ -75,7 +75,7 @@ def distribute_list(list_id: int):
                     connection.execute(sqlalchemy.text(
                     """
                     SELECT
-                        name
+                        item_name
                     FROM items
                     WHERE id = :item_id
                     """
@@ -88,7 +88,7 @@ def distribute_list(list_id: int):
         
 
 
-@router.post("/stores/{list_id}/best (POST)")
+@router.post("/{list_id}/best (POST)")
 def find_best_item(list_id: int):
     """ """
     with db.engine.begin() as connection:
@@ -131,9 +131,9 @@ def find_best_item(list_id: int):
                             )
                         """
                     ), [{"item_id": item[0], "store_id": store[0]}]
-                )
+                ).scalar()
                 if itemPriceRes:
-                    itemPrice = itemPriceRes.scalar_one()
+                    itemPrice = float(itemPriceRes)
                 else:
                     #if item not in crowdsource for that store, just basically disqualify that list from being min
                     itemPrice = 999999
@@ -147,24 +147,17 @@ def find_best_item(list_id: int):
     
     
 
-@router.post("/stores/ (GET)")
+@router.post("/find (GET)")
 def find_stores():
     """ """
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text(
+        all_stores = connection.execute(sqlalchemy.text(
             """
-            SELECT id, name 
+            SELECT id, store_name 
             FROM stores
             ORDER BY id ASC
             """
             )).fetchall()
     
-    stores = []
-    for store in result:
-        stores.append(
-            {
-                "id": store[0],
-                "name": store[1]
-            }
-        )
+    stores = {key: value for key, value in all_stores}
     return stores
