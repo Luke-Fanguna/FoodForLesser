@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from src.api import auth
 import sqlalchemy
 from src import database as db
+from collections import defaultdict
 
 router = APIRouter(
 prefix="/stores",
@@ -98,7 +99,7 @@ def find_best_item(list_id: int):
                 """
                 SELECT item_id, quantity
                 FROM grocery_list_items
-                WHERE list_id = :list_id
+                WHERE list_id = :list_id 
                 """    
             ), [{"list_id": list_id}]
         ).fetchall()
@@ -114,7 +115,8 @@ def find_best_item(list_id: int):
         
         
         #initialize list of total prices corresponding to store id
-        prices = [0] * len(stores)
+        # prices = [0] * len(stores)
+        prices = defaultdict(float)
         
         for item in items:
             for store in stores:
@@ -122,7 +124,7 @@ def find_best_item(list_id: int):
                 itemPriceRes = connection.execute(
                     sqlalchemy.text(
                         """
-                        SELECT price
+                        SELECT COALESCE(price, :default_price) AS price
                         FROM crowdsourced_entries
                         WHERE created_at = (
                             SELECT MAX(created_at) 
@@ -130,19 +132,26 @@ def find_best_item(list_id: int):
                             WHERE item_id = :item_id and store_id = :store_id
                             )
                         """
-                    ), [{"item_id": item[0], "store_id": store[0]}]
+                    ), [{"item_id": item[0], "store_id": store[0], "default_price": -1}]
                 ).scalar()
-                if itemPriceRes:
+                if itemPriceRes > -1:
                     itemPrice = float(itemPriceRes)
                 else:
                     #if item not in crowdsource for that store, just basically disqualify that list from being min
                     itemPrice = 999999
                 #add the price of the item * quantity to the corresponding store
                 #subtract 1 because first store id starts at 1 and not 0
-                prices[store[0] - 1] += itemPrice * item[1]
-                
-        best_store = prices.index(min(prices)) + 1
+                quantity = item[1]
+                prices[store[0]] += itemPrice * quantity
+        if prices:
+            best_store = min(prices, key = prices.get)
+        else:
+            return {"result": "No stores have every item in your list."}
+
         #print(prices)
+        #will indicate that each store is missing at least one item from the grocery list
+        if best_store >= 999999:
+            return {"result": "No stores have every item in your list."}
         return {"store_id": best_store}
     
     
@@ -151,12 +160,13 @@ def find_best_item(list_id: int):
 def find_stores():
     """ """
     with db.engine.begin() as connection:
-        all_stores = connection.execute(sqlalchemy.text(
-            """
-            SELECT id, store_name 
-            FROM stores
-            ORDER BY id ASC
-            """
+        all_stores = connection.execute(
+            sqlalchemy.text(
+                """
+                SELECT id, store_name 
+                FROM stores
+                ORDER BY id ASC
+                """
             )).fetchall()
     
     stores = {key: value for key, value in all_stores}
