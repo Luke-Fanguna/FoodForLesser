@@ -95,23 +95,19 @@ def find_best_item(list_id: int):
     with db.engine.begin() as connection:
         #should grab all items in the users list and their quantities
         items = connection.execute(
-            sqlalchemy.text(
-                """
-                SELECT item_id, quantity
-                FROM grocery_list_items
-                WHERE list_id = :list_id 
-                """    
-            ), [{"list_id": list_id}]
+            sqlalchemy.text("""
+                            SELECT item_id, quantity
+                            FROM grocery_list_items
+                            WHERE list_id = :list_id 
+                            """), 
+            [{"list_id": list_id}]
         ).fetchall()
         
         stores = connection.execute(
-            sqlalchemy.text(
-                """
-                SELECT id
-                FROM stores
-                """
-            )
-        ).fetchall()
+            sqlalchemy.text("""
+                            SELECT id
+                            FROM stores
+                            """)).fetchall()
         
         
         #initialize list of total prices corresponding to store id
@@ -122,19 +118,17 @@ def find_best_item(list_id: int):
             for store in stores:
                 #get the price of the most recent posting of the item
                 itemPriceRes = connection.execute(
-                    sqlalchemy.text(
-                        """
-                        SELECT COALESCE(price, :default_price) AS price
-                        FROM crowdsourced_entries
-                        WHERE created_at = (
-                            SELECT MAX(created_at) 
-                            FROM crowdsourced_entries
-                            WHERE item_id = :item_id and store_id = :store_id
-                            )
-                        """
-                    ), [{"item_id": item[0], "store_id": store[0], "default_price": -1}]
-                ).scalar()
-                if itemPriceRes > -1:
+                    sqlalchemy.text("""
+                                    SELECT COALESCE(price, :default_price) AS price
+                                    FROM crowdsourced_entries
+                                    WHERE created_at = (
+                                        SELECT MAX(created_at) 
+                                        FROM crowdsourced_entries
+                                        WHERE item_id = :item_id and store_id = :store_id
+                                        )
+                                    """), 
+                    [{"item_id": item[0], "store_id": store[0], "default_price": -1}]).scalar()
+                if itemPriceRes and itemPriceRes > -1:
                     itemPrice = float(itemPriceRes)
                 else:
                     #if item not in crowdsource for that store, just basically disqualify that list from being min
@@ -161,13 +155,11 @@ def find_stores():
     """ """
     with db.engine.begin() as connection:
         all_stores = connection.execute(
-            sqlalchemy.text(
-                """
-                SELECT id, store_name 
-                FROM stores
-                ORDER BY id ASC
-                """
-            )).fetchall()
+            sqlalchemy.text("""
+                            SELECT id, store_name 
+                            FROM stores
+                            ORDER BY id ASC
+                            """)).fetchall()
     
     stores = {key: value for key, value in all_stores}
     return stores
