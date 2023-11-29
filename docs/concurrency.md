@@ -36,3 +36,17 @@ In our create list endpoint, we need to check if the user exists, as well as if 
  	INSERT INTO grocery_list (list_name, user_id) VALUES (:list_name, (:user_id)) RETURNING id ->
 	
 In this instance, the exact same select query would retrieve different rows due to the other transaction inserting a grocery list, resulting in a phantom read. This can be avoided by making the transaction serializable, so that that transactions run one at a time. 
+
+## 3. Case 3 - Read Skew in distribute list - /{list_id}/distribute (POST)
+In our distribute list endpoint, we first grab all of the item_id's from the grocery list items table and then use those item_id's to find the stores where those items are cheapest. We use a for loop to run an individual query to find the result for each individual item. This could cause inconsistencies if updated item price entry transactions are entered while we are getting the results of all the items.
+
+ 	SELECT item_id FROM grocery_list_items WHERE list_id = :list_id -> 
+  
+ 	        <- UPDATE crowdsourced_entries SET price = 3 WHERE item_id = 4
+
+   	loop{
+ 	SELECT store_id, item_id, price FROM crowdsourced_entries WHERE item_id = :item_id ORDER BY store_id asc ->
+  	}
+	
+In this instance, we may get inconsistent data from when the transaction initially started because we are looping through the item_id's. We could fix this by aggregating our tables first so that we could use a group by statement and find the lowest price with MAX() rather than separating the query into two.
+
