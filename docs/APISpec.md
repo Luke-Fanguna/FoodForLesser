@@ -1,8 +1,8 @@
 # 8 API specification: 
 ## 1. Grocery List - Customer
-### 1.1 - Create a new grocery list - /lists/ (POST)
+### 1.1 - Create a new grocery list - /lists/ (POST) (Complex Endpoint)
 	*Creates a new grocery list*
-	Input: None 
+	Input: user_id, list_name 
 	Output: Grocery List Id
 ### 1.2 - Add new grocery list item - /lists/{list_id}/items/{item_name} (PUT)
 	*Adds a new grocery item to your grocery list*
