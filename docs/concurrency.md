@@ -12,7 +12,15 @@ In our create user endpoint, we need to check if the username and email exist be
 	
 In this instance, when we try to insert new user information there is an existing user with the same data already. This would cause our insert query to roll back due to the values not matching the unique constraints on username and email columns. This can be fixed by checking if the username and email already exist within our insert query. 
 
- 	INSERT INTO users (username, email) VALUES (:username, :email) ON CONFLICT (username, email) DO NOTHING
+ 	WITH check_existing AS (
+                SELECT id
+                FROM users
+                WHERE username = :username OR email = :email
+            )
+    	INSERT INTO users (username, email)
+    	SELECT :username, :email
+    	WHERE NOT EXISTS (SELECT 1 FROM check_existing)
+    	RETURNING id;
 
 This query checks if the username and email exist before inserting. This will guarantee that each time a valid email or username is inputted at the moment of transaction, we will insert it correctly.
 
