@@ -15,3 +15,16 @@ In this instance, when we try to insert new user information there is an existin
  	INSERT INTO users (username, email) VALUES (:username, :email) ON CONFLICT (username, email) DO NOTHING
 
 This query checks if the username and email exist before inserting. This will guarantee that each time a valid email or username is inputted at the moment of transaction, we will insert it correctly.
+
+## 2. Case 2 - Phantom Read in create a new grocery list - /lists/create (POST)
+In our create list endpoint, we need to check if the user exists, as well as if there is already a grocery list under the same name, that way each user has uniquely named grocery lists. This can create a phantom read however, if multiple occurences of this endpoint are executed. For example if one transaction is reading if the list name already exists in which the query returns no, and another instance of this endpoint inserts a new grocery list with the name that the first transaction had checked for right after, then the rows retrieved by the first transaction would differ if it read from the DB again. 
+
+ 	SELECT list_name FROM grocery_list WHERE user_id = :user_id and list_name = :list_name -> 
+  
+ 	        <- INSERT INTO grocery_list (list_name, user_id) VALUES (:list_name, (:user_id)) RETURNING id
+	  
+	SELECT list_name FROM grocery_list WHERE user_id = :user_id and list_name = :list_name -> 
+ 
+ 	INSERT INTO grocery_list (list_name, user_id) VALUES (:list_name, (:user_id)) RETURNING id ->
+	
+In this instance, the exact same select query would retrieve different rows due to the other transaction inserting a grocery list, resulting in a phantom read. This can be avoided by making the transaction serializable, so that that transactions run one at a time. 
