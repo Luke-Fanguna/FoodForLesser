@@ -134,7 +134,7 @@ def find_best_item(list_id: int):
                         """
                     ), [{"item_id": item[0], "store_id": store[0], "default_price": -1}]
                 ).scalar()
-                if itemPriceRes > -1:
+                if itemPriceRes and itemPriceRes > -1:
                     itemPrice = float(itemPriceRes)
                 else:
                     #if item not in crowdsource for that store, just basically disqualify that list from being min
