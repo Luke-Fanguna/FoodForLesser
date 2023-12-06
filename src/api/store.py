@@ -16,22 +16,32 @@ dependencies=[Depends(auth.get_api_key)],
 # get item_id with list_id from grocery_list_items
 # with item_id, find the smallest for each value and unique values are found with list_id
 # list_id == user_id
-@router.post("/{list_id}/distribute (POST)")
+@router.post("/{list_id}/distribute")
 def distribute_list(list_id: int):
     """ """
     with db.engine.begin() as connection:
         # gets every item from list_id
+        list_exists = connection.execute(
+            sqlalchemy.text("""
+                                SELECT id
+                                FROM grocery_list
+                                WHERE grocery_list.id = :list_id
+                                """),
+                [{"list_id": list_id}]).fetchone()
+        
+        if not list_exists:
+            return {"error" : "List does not exist"}
+
         items = connection.execute(sqlalchemy.text(
         """
-        SELECT
-            item_id
+        SELECT item_id
         FROM grocery_list_items
         WHERE list_id = :list_id
         """
         ),[{"list_id":list_id}]).fetchall()
         print("items",items)
-        if items[0] == None:
-            return []
+        if not items:
+            return {"result" : "no items in list"}
         items = [x[0] for x in items]
         print('arr',items)
         best = []
@@ -89,11 +99,22 @@ def distribute_list(list_id: int):
         
 
 
-@router.post("/{list_id}/best (POST)")
+@router.post("/{list_id}/best")
 def find_best_item(list_id: int):
     """ """
     with db.engine.begin() as connection:
         #should grab all items in the users list and their quantities
+        list_exists = connection.execute(
+            sqlalchemy.text("""
+                                SELECT id
+                                FROM grocery_list
+                                WHERE grocery_list.id = :list_id
+                                """),
+                [{"list_id": list_id}]).fetchone()
+        
+        if not list_exists:
+            return {"error" : "List does not exist"}
+
         items = connection.execute(
             sqlalchemy.text("""
                             SELECT item_id, quantity
@@ -146,11 +167,18 @@ def find_best_item(list_id: int):
         #will indicate that each store is missing at least one item from the grocery list
         if best_store >= 999999:
             return {"result": "No stores have every item in your list."}
-        return {"store_id": best_store}
-    
-    
+        
+        store = connection.execute(
+            sqlalchemy.text("""
+                            SELECT store_name
+                            FROM stores
+                            WHERE id = :store_id
+                            """), 
+                    [{"store_id": best_store}]).scalar_one()
 
-@router.post("/find (GET)")
+        return {"store_id": best_store, "store_name": store}
+
+@router.post("/find")
 def find_stores():
     """ """
     with db.engine.begin() as connection:
