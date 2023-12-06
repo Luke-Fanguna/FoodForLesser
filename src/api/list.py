@@ -61,21 +61,33 @@ def create_list(user_id: int, list_name: str):
 def get_list(list_id : int):
     """ """
     with db.engine.begin() as connection:
+        list_exists = connection.execute(
+            sqlalchemy.text("""
+                                SELECT id
+                                FROM grocery_list
+                                WHERE grocery_list.id = :list_id
+                                """),
+                [{"list_id": list_id}]).fetchone()
+        
+        if not list_exists:
+            return {"error" : "List id does not exist."}
+
         items = connection.execute(
                 sqlalchemy.text("""
-                                SELECT item_id, items.item_name, quantity
-                                FROM grocery_list_items
-                                JOIN items on items.id = grocery_list_items.item_id
-                                WHERE grocery_list_items.list_id = :list_id
+                                SELECT gli.id, item_id, items.item_name, quantity
+                                FROM grocery_list_items as gli
+                                JOIN items on items.id = gli.item_id
+                                WHERE gli.list_id = :list_id
                                 """),
                 [{"list_id": list_id}]).fetchall()
 
     res_list = []
 
     for item in items:
-        res_list.append({"item_id": item[0], 
-                    "item": item[1], 
-                    "quantity": item[2]})
+        res_list.append({"posting_id": item[0],
+                         "item_id": item[1], 
+                    "item": item[2], 
+                    "quantity": item[3]})
     return res_list
 
 
@@ -101,20 +113,55 @@ def set_item_quantity(list_id: int, item_id: int, quantity: int):
     """
     Adds a new item to the grocery list with the given list name
     """
+
+    if quantity < 1:
+        return {"error": "quantity must be greater than 0"}
+
     with db.engine.begin() as connection:
+        item_exists = connection.execute(
+            sqlalchemy.text("""
+                                SELECT id
+                                FROM items
+                                WHERE items.id = :item_id
+                                """),
+                [{"item_id": item_id}]).fetchone()
+        
+        if not item_exists:
+            return {"error" : "Item does not exist"}
+        
+        list_exists = connection.execute(
+            sqlalchemy.text("""
+                                SELECT id
+                                FROM grocery_list
+                                WHERE grocery_list.id = :list_id
+                                """),
+                [{"list_id": list_id}]).fetchone()
+        
+        if not list_exists:
+            return {"error" : "List does not exist"}
+
         posting_id = connection.execute(
             sqlalchemy.text("""
+                            WITH check_existing AS (
+                                SELECT id
+                                FROM grocery_list_items
+                                WHERE list_id = :list_id and item_id = :item_id
+                            )
                             INSERT INTO grocery_list_items (list_id, item_id, quantity)
                             SELECT :list_id, :item_id, :quantity
+                            WHERE NOT EXISTS (SELECT 1 FROM check_existing)
                             RETURNING id
                             """),
             [{
                 "list_id": list_id,
                 "item_id": item_id,
                 "quantity": quantity,
-            }]).scalar_one()
+            }]).fetchone()
     
-    return {"posting_id": posting_id}
+    if not posting_id:
+        return {"error" : "Item already entered into list"}
+
+    return {"posting_id": posting_id[0]}
 
 
 @router.put("/{posting_id}/items/{quantity}")
@@ -124,18 +171,26 @@ def update_list(posting_id: int, quantity : int):
     specified by the posting_id passed in 
     """
 
+    if quantity < 1:
+        return {"error": "quantity must be greater than 0"}
+
     with db.engine.begin() as connection:
-        connection.execute(
+        check = connection.execute(
             sqlalchemy.text("""
                             UPDATE grocery_list_items
                             SET quantity = :quantity
                             WHERE id = :posting_id
+                            returning id
                             """),
             [{
                 "quantity": quantity,
                 "posting_id": posting_id,
-            }])    
-    return "OK"
+            }]).fetchone()
+    
+    if not check:
+        return {"error": "posting does not exist"}
+        
+    return {"update": "success", "posting_id": check[0], "quantity" : quantity }
 
 
 @router.delete("/{posting_id}/items/")
@@ -145,13 +200,17 @@ def delete_item(posting_id: int):
     """
 
     with db.engine.begin() as connection:
-        connection.execute(
+        check = connection.execute(
             sqlalchemy.text("""
                             DELETE FROM grocery_list_items
                             WHERE id = :posting_id
+                            returning id
                             """),
             [{
                 "posting_id": posting_id,
-            }])
+            }]).fetchone()
 
-    return "OK"
+    if not check:
+        return {"error": "posting does not exist"}
+    
+    return {"delete": "success"}
