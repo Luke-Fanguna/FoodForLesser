@@ -14,8 +14,8 @@ router = APIRouter(
 def create_user(username : str, email : str):
     if not username and not email:
         return {"result": "EMPTY USERNAME/EMAIL" }
-    calpoly = re.compile('[A-Za-z]+@calpoly\.edu')
-    gmail = re.compile('[A-Za-z]+@gmail\.com')
+    calpoly = re.compile('[A-Za-z0-9]+@calpoly\.edu')
+    gmail = re.compile('[A-Za-z0-9]+@gmail\.com')
 
     if calpoly.match(email) is None and gmail.match(email) is None:
         return {"result": "MUST USE CALPOLY OR GMAIL EMAIL ADDRESS" }
