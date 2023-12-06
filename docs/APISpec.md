@@ -4,17 +4,54 @@
 	*Creates a new grocery list*
 	Input: user_id, list_name 
 	Output: Grocery List Id
-### 1.2 - Add new grocery list item - /lists/{list_id}/items/{item_name} (PUT)
+### 1.2 - Get users current list - /lists/get/{list_id}
+	*Gets grocery list*
+ 	Input: list_id
+  	Output: 
+   	```
+    	[
+	  {
+	    "posting_id": ..,
+	    "item_id": ..,
+	    "item": .. ,
+	    "quantity": ..
+	  },
+   	  ...
+	]
+    	```
+### 1.3 - Get items that can be added to list - /lists/get
+	*Gets items*
+ 	Input: None
+  	Output:
+   	```
+	{
+	  "1": "Ketchup",
+	  "2": "Hotdogs",
+	  "3": "Bread",
+	  "4": "Doritos",
+	  "5": "Tuna",
+	  "6": "Chicken Breast",
+	  "7": "Cheese",
+	  "8": "Milk",
+	  "9": "Tomato",
+	  "10": "Eggs"
+	}
+    	```
+### 1.4 - Set item quantity - /lists/create/item_quantity
+	*Adds a new item to the grocery list with the given list name*
+ 	Input: list_id, item_id, quantity
+  	Output: posting_id
+### 1.5 - Add new grocery list item - /lists/{list_id}/items/{item_name} (PUT)
 	*Adds a new grocery item to your grocery list*
 	Input: Grocery item name
 	Output: None
-### 1.3 - Delete grocery list item - /lists/{list_id}/items/{item_name} (DELETE)
+### 1.6 - Delete grocery list item - /lists/{list_id}/items/{item_name} (DELETE)
 	*Deletes a grocery item from your grocery list*
 	Input: Grocery item name
 	Output: None
 
 ## 2. Items search
-### 2.1 - Get Stores - /stores/ (GET)
+### 2.1 - Get Stores - /stores/find (GET)
 	*Retrieves the list of stores with distances*
 	Input: Location
 	Output: Store locations within a 10 mile radius
