@@ -2,28 +2,28 @@ users.py
 create_user: 136.578 ms
 
 list.py
-create_list: 2.035 ms
-get_list: 0.515 ms
-get_items: 0.288 ms
-set_item_quantity: 9.680 ms
-update_list: 2.438 ms
-delete_item: 0.434 ms
+- create_list: 2.035 ms
+- get_list: 0.515 ms
+- get_items: 0.288 ms
+- set_item_quantity: 9.680 ms
+- update_list: 2.438 ms
+- delete_item: 0.434 ms
 store.py
-distribute_list: 337.960 ms
-find_best_item: 372.472 ms
-find_stores: 0.898 ms
+- distribute_list: 337.960 ms
+- find_best_item: 372.472 ms
+- find_stores: 0.898 ms
 crowdsourcing.py
-upload_entry: 2.789 ms
-update_entry: 6.614 ms
-remove_entry: 0.430 ms
+- upload_entry: 2.789 ms
+- update_entry: 6.614 ms
+- remove_entry: 0.430 ms
 
 3 slowest endpoints
-Distribute: 337.960 ms
-Best: 372.472 ms
-	Create user: 136.578 ms
+- Distribute: 337.960 ms
+- Best: 372.472 ms
+- Create user: 136.578 ms
 
 Fake Data Modeling
-	[populate_rows.py]
+	[FoodForLesser/src/api/populate_rows.py]
 	Our user table has about 1,000,000 rows, stores table has 5 rows, items table has 50 rows, grocery_list has 4 rows, grocery_list_items has 2 rows, crowdsourced_entries has 3,976,358 rows. We believe that our service would scale this way because the users can grow greatly and the crowdsourced_entries will scale as well because each user can make many entries. By this we mean that the users will make many crowdsourced_entries over and over again. 
 
 
