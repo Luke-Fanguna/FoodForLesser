@@ -23,7 +23,7 @@ crowdsourcing.py
 - Create user: 136.578 ms
 
 Fake Data Modeling
-	[FoodForLesser/src/api/populate_rows.py]
+	[src/api/populate_rows.py]
 	Our user table has about 1,000,000 rows, stores table has 5 rows, items table has 50 rows, grocery_list has 4 rows, grocery_list_items has 2 rows, crowdsourced_entries has 3,976,358 rows. We believe that our service would scale this way because the users can grow greatly and the crowdsourced_entries will scale as well because each user can make many entries. By this we mean that the users will make many crowdsourced_entries over and over again. 
 
 
