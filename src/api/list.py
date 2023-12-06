@@ -118,6 +118,28 @@ def set_item_quantity(list_id: int, item_id: int, quantity: int):
         return {"error": "quantity must be greater than 0"}
 
     with db.engine.begin() as connection:
+        item_exists = connection.execute(
+            sqlalchemy.text("""
+                                SELECT id
+                                FROM items
+                                WHERE items.id = :item_id
+                                """),
+                [{"item_id": item_id}]).fetchone()
+        
+        if not item_exists:
+            return {"error" : "Item does not exist"}
+        
+        list_exists = connection.execute(
+            sqlalchemy.text("""
+                                SELECT id
+                                FROM grocery_list
+                                WHERE grocery_list.id = :list_id
+                                """),
+                [{"list_id": list_id}]).fetchone()
+        
+        if not list_exists:
+            return {"error" : "List does not exist"}
+
         posting_id = connection.execute(
             sqlalchemy.text("""
                             WITH check_existing AS (
