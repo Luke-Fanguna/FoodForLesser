@@ -27,11 +27,53 @@ def upload_entry(
     ):
     """ """
 
+    if grocery_price < 0:
+        return {"error" : "Price can't be less than zero"}
+
     with db.engine.begin() as connection:
+        user_exists = connection.execute(
+                sqlalchemy.text("""
+                                SELECT id 
+                                FROM users 
+                                WHERE id = :user_id
+                                """),
+                [{"user_id": user_id}]).fetchone()
+        
+        if not user_exists:
+            return {"error" : "User id does not exist."}
+        
+        store_exists = connection.execute(
+                sqlalchemy.text("""
+                                SELECT id 
+                                FROM stores 
+                                WHERE stores.id = :store_id
+                                """),
+                [{"store_id": store_id}]).fetchone()
+        
+        if not store_exists:
+            return {"error" : "Store id does not exist."}
+        
+        item_exists = connection.execute(
+            sqlalchemy.text("""
+                                SELECT id
+                                FROM items
+                                WHERE items.id = :item_id
+                                """),
+                [{"item_id": item_id}]).fetchone()
+        
+        if not item_exists:
+            return {"error" : "Item does not exist"}
+
         entry = connection.execute(
             sqlalchemy.text("""
+                            WITH check_existing AS (
+                                SELECT id
+                                FROM crowdsourced_entries
+                                WHERE item_id = :item_id and user_id = :user_id and store_id = :store_id
+                            )
                             INSERT INTO crowdsourced_entries (created_at, item_id, store_id, user_id, price, inventory)
                             SELECT NOW(), :item_id, :store_id, :user_id, :grocery_price, :inventory
+                            WHERE NOT EXISTS (SELECT 1 FROM check_existing)
                             RETURNING id
                             """),
             [{
@@ -40,9 +82,12 @@ def upload_entry(
                 "user_id": user_id,
                 "grocery_price": grocery_price,
                 "inventory": inventory_levels
-            }]).scalar_one()
+            }]).fetchone()
     
-    return {"posting_id":entry}
+    if not entry:
+        return {"error" : "Item entry already exists from user"}
+
+    return {"posting_id":entry[0]}
 
 @router.put("/update")
 def update_entry(
@@ -50,27 +95,38 @@ def update_entry(
         grocery_price : float
     ):
     
+    if grocery_price < 0:
+        return {"error" : "Price can't be less than zero"}
+
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text("""
+        entry = connection.execute(sqlalchemy.text("""
                                             UPDATE crowdsourced_entries
                                             SET price = :grocery_price
                                             WHERE id = :posting_id
+                                            returning id
                                             """),[{
                                                 "posting_id": posting_id,
                                                 "grocery_price": grocery_price,
-                                            }])
-        
-    return "OK"
+                                            }]).fetchone()
+    
+    if not entry:
+        return {"error" : "Entry does not exist"}
+
+    return {"update": "success", "entry_id" : entry[0], "price": grocery_price}
     
 @router.delete("/delete")
 def remove_entry(
         posting_id : int,
     ):
     with db.engine.begin() as connection:
-        connection.execute(sqlalchemy.text(
+        check = connection.execute(sqlalchemy.text(
         """
         DELETE FROM crowdsourced_entries
         WHERE id = :posting_id
-        """),[{"posting_id": posting_id}])
-        
-    return "OK"
+        returning id
+        """),[{"posting_id": posting_id}]).fetchone()
+    
+    if not check:
+        return {"error": "posting does not exist"}
+    
+    return {"delete": "success"}
